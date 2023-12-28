@@ -4,7 +4,7 @@ import GetTimeEntriesController from './controllers/GetTimeEntriesController';
 const router = Router();
 
 router.get('/', async (req: Request, res: Response) => {
-	return res.send('salve');
+	return res.send('CLOCKIFY API REPORT');
 });
 
 router.get('/timeEntries/month', async (req: Request, res: Response) => {
