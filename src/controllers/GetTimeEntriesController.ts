@@ -46,72 +46,94 @@ export default class GetTimeEntriesController {
 		return 'Relatório enviado com sucesso.';
 	}
 
+	getProjectName(projectId: string) {
+		switch (projectId) {
+			case process.env.CLOCKIFY_PROJECT_MURALIS_ID:
+				return 'MURALIS';
+			case process.env.CLOCKIFY_PROJECT_COMUNIX_ID:
+				return 'COMUNIX';
+			default:
+				return 'COMUNIX';
+		}
+	}
+
+	formatDuration(minutes: number): string {
+		const duration = moment.duration(minutes, 'minutes');
+		const hours = Math.floor(duration.asHours()).toString().padStart(2, '0');
+		const minutesFormatted = duration.minutes().toString().padStart(2, '0');
+		const secondsFormatted = duration.seconds().toString().padStart(2, '0');
+		return `${hours}:${minutesFormatted}:${secondsFormatted}`;
+	}
+
 	generateXLSXRows(timeEntries: TIME_ENTRY[]): any {
-		const result = [];
+		const consolidatedData = [];
 
 		for (let i = 0; i < timeEntries.length; i++) {
-			const timeEntry: TIME_ENTRY = timeEntries[i];
+			const timeEntry = timeEntries[i];
 
-			const getTreatedTime = (timeInterval: TIME_INTERVAL) => {
-				const { start, end } = timeInterval;
+			const dataInicio = moment(timeEntry.timeInterval.start);
+			const projectName = this.getProjectName(timeEntry.projectId);
+			const splittedDescription = timeEntry.description.split('/');
 
-				// Parse das strings de data e hora para objetos Moment
+			const getTreatedTime = () => {
+				const { start, end } = timeEntry.timeInterval;
 				const dataInicio = moment(start);
 				const dataFim = moment(end);
-
-				// Calcular a diferença entre as duas datas
 				const diferencaTempo = moment.duration(dataFim.diff(dataInicio));
-
-				// Formatar a diferença de tempo
-				const horas = diferencaTempo.hours().toString().padStart(2, '0');
-				const minutos = diferencaTempo.minutes().toString().padStart(2, '0');
-				const segundos = diferencaTempo.seconds().toString().padStart(2, '0');
-
-				return `${horas}:${minutos}:${segundos}`;
+				return diferencaTempo.asMinutes(); // Retorna a diferença em minutos
 			};
-
-			if (i > 0) {
-				let currentTimeEntryDay = timeEntry.timeInterval.start
-					.split('-')[2]
-					.split('T')[0];
-
-				let previusTimeEntryDay = timeEntries[i - 1].timeInterval.start
-					.split('-')[2]
-					.split('T')[0];
-
-				if (currentTimeEntryDay !== previusTimeEntryDay) result.push([]);
-			}
-
-			let projectName = '';
-
-			switch (timeEntry.projectId) {
-				case process.env.CLOCKIFY_PROJECT_MURALIS_ID:
-					projectName = 'MURALIS';
-					break;
-
-				case process.env.CLOCKIFY_PROJECT_COMUNIX_ID:
-					projectName = 'COMUNIX';
-					break;
-
-				default:
-					projectName = 'COMUNIX';
-					break;
-			}
-
-			const splittedDescription = timeEntry.description.split('/');
 
 			const row = [
 				splittedDescription[1],
 				splittedDescription[2],
 				splittedDescription[0],
 				projectName,
-				getTreatedTime(timeEntry.timeInterval),
+				getTreatedTime(),
 			];
 
-			result.push(row);
+			const currentDay = dataInicio.format('YYYY-MM-DD');
+
+			// Encontrar a última entrada no mesmo dia com a mesma descrição
+			const lastEntryIndex = consolidatedData
+				.slice()
+				.reverse()
+				.findIndex(
+					(entry) =>
+						entry[0] === row[0] &&
+						entry[2] === row[2] &&
+						entry[3] === row[3] &&
+						typeof entry[4] === 'number'
+				);
+
+			if (lastEntryIndex !== -1) {
+				// Somar o tempo ao último registro encontrado
+				const duration =
+					consolidatedData[consolidatedData.length - 1 - lastEntryIndex][4];
+				consolidatedData[consolidatedData.length - 1 - lastEntryIndex][4] =
+					typeof duration === 'number'
+						? duration + Number(row[4])
+						: Number(row[4]);
+			} else {
+				// Adiciona uma linha em branco se o dia for diferente do anterior
+				if (
+					i > 0 &&
+					currentDay !==
+						moment(timeEntries[i - 1].timeInterval.start).format('YYYY-MM-DD')
+				) {
+					consolidatedData.push([]); // Adiciona uma linha em branco
+				}
+
+				consolidatedData.push(row); // Adiciona a linha atual
+			}
 		}
 
-		return result;
+		// Converte a duração total de minutos para o formato hh:mm:ss
+		consolidatedData.forEach((entry) => {
+			entry[4] =
+				typeof entry[4] === 'number' ? this.formatDuration(entry[4]) : entry[4];
+		});
+
+		return consolidatedData;
 	}
 
 	async generateXLSX(data: TIME_ENTRY[]): Promise<String> {
