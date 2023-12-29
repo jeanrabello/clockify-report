@@ -43,7 +43,7 @@ export default class GetTimeEntriesController {
 
 		const result = await this.generateXLSX(timeEntries);
 		await this.sendReportToEmail(result);
-		return 'Relatório enviado com sucesso.';
+		return { message: 'Relatório enviado com sucesso.' };
 	}
 
 	getProjectName(projectId: string) {

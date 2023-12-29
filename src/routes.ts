@@ -10,7 +10,7 @@ router.get('/', async (req: Request, res: Response) => {
 router.get('/timeEntries/month', async (req: Request, res: Response) => {
 	const controller = new GetTimeEntriesController();
 	const result = await controller.handle(req, res);
-	return res.send(result);
+	return res.json(result);
 });
 
 export default router;
