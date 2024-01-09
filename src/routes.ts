@@ -1,16 +1,10 @@
-import { Request, Response, Router } from 'express';
-import GetTimeEntriesController from './controllers/GetTimeEntriesController';
+import { Router } from 'express';
+import GetClockifyUserController from './controllers/GetClockifyUserController';
 
 const router = Router();
 
-router.get('/', async (req: Request, res: Response) => {
-	return res.send('CLOCKIFY API REPORT');
-});
+const getClockifyUserController = new GetClockifyUserController();
 
-router.get('/timeEntries/month', async (req: Request, res: Response) => {
-	const controller = new GetTimeEntriesController();
-	const result = await controller.handle(req, res);
-	return res.json(result);
-});
+router.post('/', getClockifyUserController.generateReport);
 
 export default router;

@@ -2,3 +2,5 @@
 node_modules
 timeReports
 dist
+package-lock.json
+yarn-lock.json
