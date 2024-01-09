@@ -1,0 +1,49 @@
+{
+	"info": {
+		"_postman_id": "5fd58a0d-95b2-4094-8154-9ba93274877f",
+		"name": "ClockifyReport",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19735932"
+	},
+	"item": [
+		{
+			"name": "get report by period",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "ZjlkMTE5ZDctODM1Ni00NzA0LTk1MzctMWNiY2ZjZGRmZjJl",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5000/?xApiKey=&start=2024-01-01&end=2024-01-31",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						""
+					],
+					"query": [
+						{
+							"key": "xApiKey",
+							"value": ""
+						},
+						{
+							"key": "start",
+							"value": "2024-01-01"
+						},
+						{
+							"key": "end",
+							"value": "2024-01-31"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

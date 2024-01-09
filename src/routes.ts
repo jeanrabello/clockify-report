@@ -5,6 +5,6 @@ const router = Router();
 
 const getClockifyUserController = new GetClockifyUserController();
 
-router.post('/', getClockifyUserController.generateReport);
+router.post('/clockify', getClockifyUserController.generateReport);
 
 export default router;
