@@ -26,9 +26,14 @@ export default class GetClockifyUserWorkspacesStrategy implements IStrategy {
 		}
 
 		dto.workspaces = workSpaces.filter(
-			(w: CLOCKIFY_WORKSPACE) => w.name === 'COMUNIX'
+			(w: CLOCKIFY_WORKSPACE) =>
+				w.name.toUpperCase() === 'COMUNIX' ||
+				w.name === `${dto.name}'s workspace`
 		);
 
+		if (dto.workspaces.length < 1) {
+			throw new CustomError('Workspace "COMUNIX" não encontrado.', 502);
+		}
 		return dto;
 	}
 }

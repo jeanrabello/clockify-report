@@ -13,7 +13,6 @@ export default class GetTimeEntriesStrategies implements IStrategy {
 		const { start, end } = domain.timeEntry.filter;
 		const basePath = 'https://api.clockify.me/api/v1';
 		const fullPath = `${basePath}/workspaces/${dto.workspaces[0].id}/user/${dto.id}/time-entries`;
-
 		const timeEntries: TIME_ENTRY[] = await axios
 			.get(fullPath, {
 				headers: {
