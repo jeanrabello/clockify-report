@@ -24,7 +24,7 @@ export default class FormatResultAndCreateMonthFileStrategy
 			dto,
 			domain.timeEntry.filter
 		);
-		await this.sendReportToEmail(result, domain.user.email);
+		// await this.sendReportToEmail(result, domain.user.email);
 		return result;
 	}
 

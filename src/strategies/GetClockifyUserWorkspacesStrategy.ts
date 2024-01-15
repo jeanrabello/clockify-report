@@ -25,15 +25,28 @@ export default class GetClockifyUserWorkspacesStrategy implements IStrategy {
 			);
 		}
 
-		dto.workspaces = workSpaces.filter(
-			(w: CLOCKIFY_WORKSPACE) =>
-				w.name.toUpperCase() === 'COMUNIX' ||
-				w.name === `${dto.name}'s workspace`
-		);
+		const workspacesName = workSpaces.map((w) => w.name);
 
-		if (dto.workspaces.length < 1) {
+		if (workspacesName.includes('COMUNIX')) {
+			dto.workspace = workSpaces.find((w: CLOCKIFY_WORKSPACE) => {
+				if (w.name === 'COMUNIX') {
+					return w;
+				}
+			});
+		} else {
+			dto.workspace = workSpaces.find((w: CLOCKIFY_WORKSPACE) => {
+				if (w.name === `${dto.name}'s workspace`) {
+					return w;
+				} else {
+					return null;
+				}
+			});
+		}
+
+		if (!dto.workspace) {
 			throw new CustomError('Workspace "COMUNIX" não encontrado.', 502);
 		}
+
 		return dto;
 	}
 }

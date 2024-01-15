@@ -19,7 +19,7 @@ export type CLOCKIFY_USER = {
 	activeWorkspace: string;
 	defaultWorkspace: string;
 	workspaces: CLOCKIFY_WORKSPACE[];
-	workspace: CLOCKIFY_WORKSPACE;
+	workspace: CLOCKIFY_WORKSPACE | undefined | null;
 };
 
 export type CLOCKIFY_WORKSPACE = {
